@@ -6,16 +6,22 @@ from csv import DictReader, writer
 from tkinter import Tk, Frame, Button
 from tkinter import BOTH, LEFT
 from tkinter import messagebox
+import os
 
 window = Tk()
 window.title("Licznik")
 window.geometry('450x250')
-window.iconbitmap('timer1.ico')
 window.resizable(False, False)
 
-stopwatch_counter_num = 82800
-stopwatch_running = False
 
+#definicje używanie w kodzie
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+def find(name, path):
+    for files in os.walk(path):
+        if name in files:
+            return "yes"
 
 def append_list_as_row(file_name, list_of_elem):
     # Open file in append mode
@@ -25,7 +31,16 @@ def append_list_as_row(file_name, list_of_elem):
         # Add contents of list as last row in the csv file
         csv_writer.writerow(list_of_elem)
 
+#definicje końcowe
 def load():
+    if find('czas.csv',__location__) != "yes":
+        with open('czas.csv', 'w+', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["Czas","Start"])
+            writer.writerow(["01-01-2000 00:00:00","Tak"])
+            writer.writerow(["01-01-2000 00:01:00","Nie"])
+    if find('timer1.ico',__location__) == "yes":
+        window.iconbitmap('timer1.ico')
     num = None
     with open("czas.csv", 'r') as file:
         csv_file = csv.DictReader(file)
@@ -85,7 +100,6 @@ empty_label_2 = Label(window, width=5)
 empty_label_2.pack(side=tk.LEFT)
 stop_button = Button(window, text= "Stop pracy",state='disabled', font = 'Arial 11', command=lambda:save('stop'), width=20, height=4)
 stop_button.pack(side=tk.LEFT)
-
 
 load()
 clock()
